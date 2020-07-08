@@ -1,0 +1,145 @@
+{
+	"name": "Qupa",
+	"scopeName": "source.qp",
+	"patterns": [
+		{"include": "#comment"},
+		{"include": "#string"},
+		{"include": "#keyword"},
+		{"include": "#opperator"},
+		{"include": "#function"},
+		{"include": "#call"},
+		{"include": "#declare"}
+	],
+	"repository": {
+		"comment": {
+			"patterns": [
+				{ "include": "#inline_comment" },
+				{ "include": "#multi_comment" }
+			]
+		},
+		"multi_comment": {
+			"name": "comment.block.qp",
+			"begin": "\\/\\*",
+			"end": "\\*\\/"
+		},
+		"inline_comment": {
+			"match": "(\\/\\/)(.*?)([\n|$])",
+			"captures": {
+				"1": {
+					"name": "comment.block.qp"
+				},
+				"2": {
+					"name": "comment.block.qp"
+				},
+				"3": {
+					"name": "comment.block.qp"
+				}
+			}
+		},
+		"string": {
+			"patterns": [
+				{ "include": "#single_string" },
+				{ "include": "#double_string" }
+			]
+		},
+		"double_string": {
+			"name": "string.quoted.double",
+			"match": "(\")(.*?)(\")"
+		},
+		"single_string": {
+			"name": "string.single.double",
+			"match": "(')(.*?)(')"
+		},
+		"declare": {
+			"patterns": [
+				{
+					"name": "declare",
+					"match": "(([^\\s])+)(\\s+)([A-z]+[A-z0-9]*)",
+					"captures": {
+						"1": {
+							"name": "storage.type"
+						}
+					}
+				}
+			]
+		},
+		"function": {
+			"patterns": [
+				{
+					"match": "([^\\s]+)(\\s+)(([^\\s(])+)(\\s*)\\((.*)\\)(\\s*){",
+					"captures": {
+						"1": {
+							"name": "storage.type"
+						},
+						"3": {
+							"name": "entity.name.function"
+						},
+						"6": {
+							"name": "variable.parameter",
+							"include": "#declare"
+						}
+					}
+				},
+				{
+					"match": "([^\\s]+)(\\s+)(([^\\s(])+)(\\s*)\\((.*)\\)(\\s*);",
+					"captures": {
+						"1": {
+							"name": "storage.type"
+						},
+						"3": {
+							"name": "entity.name.function"
+						},
+						"6": {
+							"name": "variable.parameter",
+							"include": "#declare"
+						}
+					}
+				}
+			]
+		},
+		"call": {
+			"patterns": [
+				{
+					"match": "(([^\\s\\(])+)(\\s*)\\((.*)\\)",
+					"captures": {
+						"1": {
+							"name": "entity.name.function"
+						}
+					}
+				}
+			]
+		},
+		"keyword": {
+			"patterns": [
+				{
+					"name": "keyword.control",
+					"match": "(if|elif|else|for|break|continue)\\s"
+				},
+				{
+					"name": "keyword",
+					"match": "(import|expose|return)\\s"
+				},
+				{
+					"name": "storage.type.extern",
+					"match": "(external)(\\s+)(export|assume)(\\s*)",
+					"captures": {
+						"3": {
+							"name": "keyword"
+						},
+						"6": {
+							"include": "#function"
+						}
+					}
+				}
+			]
+		},
+		"opperator": {
+			"patterns": [
+				{
+					"name": "keyword.operator",
+					"match": "\\-|\\+|\\=|\\*|\\/"
+				}
+			]
+		}
+	}
+}
