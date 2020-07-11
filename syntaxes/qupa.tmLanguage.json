@@ -3,7 +3,9 @@
 	"scopeName": "source.qp",
 	"patterns": [
 		{"include": "#comment"},
-		{"include": "#string"},
+		{"include": "#constant"},
+		{"include": "#punctuation"},
+		{"include": "#external"},
 		{"include": "#keyword"},
 		{"include": "#opperator"},
 		{"include": "#function"},
@@ -11,6 +13,15 @@
 		{"include": "#declare"}
 	],
 	"repository": {
+		"constant": {
+			"name": "constant",
+			"patterns": [
+				{ "include": "#string" },
+				{ "name": "constant.language.true", "match" : "true" },
+				{ "name": "constant.language.false", "match" : "false" },
+				{ "include": "#constant.numeric"}
+			]
+		},
 		"comment": {
 			"patterns": [
 				{ "include": "#inline_comment" },
@@ -23,18 +34,8 @@
 			"end": "\\*\\/"
 		},
 		"inline_comment": {
-			"match": "(\\/\\/)(.*?)([\n|$])",
-			"captures": {
-				"1": {
-					"name": "comment.block.qp"
-				},
-				"2": {
-					"name": "comment.block.qp"
-				},
-				"3": {
-					"name": "comment.block.qp"
-				}
-			}
+			"name": "comment.block.qp",
+			"match": "(\\/\\/)(.*?)([\n|$])"
 		},
 		"string": {
 			"patterns": [
@@ -49,6 +50,35 @@
 		"single_string": {
 			"name": "string.single.double",
 			"match": "(')(.*?)(')"
+		},
+		"constant.numeric": {
+			"name": "constant.numeric",
+			"pattenrns": [
+				{ "match": "(\\-?)(([1-9][0-9]*)|[0])" },
+				{ "match": "0x[0-9A-Fa-f]+" },
+				{ "match": "0o[0123]+" },
+				{ "match": "0b[1|0]+" },
+				{ "match": "(\\-?)([1-9][0-9]*|[0])(\\.)([0-9])*(\\e[0-9]+)?" }
+			]
+		},
+		"punctuation": {
+			"name": "punctuation",
+			"patterns": [
+				{"name": "punctuation.separator.delimiter.comma", "match": "," },
+				{"name": "punctuation.terminator.statement", "match": ";" }
+			]
+		},
+		"external": {
+			"name": "storage",
+			"match": "(external)(\\s+)(export|assume)",
+			"captures": {
+				"1": {
+					"name": "storage.type.extern"
+				},
+				"3": {
+					"name": "keyword"
+				}
+			}
 		},
 		"declare": {
 			"patterns": [
@@ -66,7 +96,7 @@
 		"function": {
 			"patterns": [
 				{
-					"match": "([^\\s]+)(\\s+)(([^\\s(])+)(\\s*)\\((.*)\\)(\\s*){",
+					"match": "([^\\s]+)(\\s+)(([^\\s(])+)(\\s*)\\((.*)\\)",
 					"captures": {
 						"1": {
 							"name": "storage.type"
@@ -76,7 +106,10 @@
 						},
 						"6": {
 							"name": "variable.parameter",
-							"include": "#declare"
+							"match": [
+								{"include": "#punctuation"},
+								{"include": "#declare"}
+							]
 						}
 					}
 				},
@@ -117,19 +150,7 @@
 				},
 				{
 					"name": "keyword",
-					"match": "(import|expose|return)\\s"
-				},
-				{
-					"name": "storage.type.extern",
-					"match": "(external)(\\s+)(export|assume)(\\s*)",
-					"captures": {
-						"3": {
-							"name": "keyword"
-						},
-						"6": {
-							"include": "#function"
-						}
-					}
+					"match": "(return)\\s"
 				}
 			]
 		},
@@ -137,7 +158,7 @@
 			"patterns": [
 				{
 					"name": "keyword.operator",
-					"match": "\\-|\\+|\\=|\\*|\\/"
+					"match": "\\-|\\+|\\=|\\*|\\/|\\%|\\@|\\$|\\&\\&|\\|\\|\\~"
 				}
 			]
 		}
